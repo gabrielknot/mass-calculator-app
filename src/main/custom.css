@@ -1,0 +1,25 @@
+.btn{
+    margin-left:5px;
+    padding: 4px;
+    padding-top: 2px;
+}
+
+.markedAsDone{
+    text-decoration: line-through;
+    color: rgba(128, 128, 128, 0.5);
+    font-size: small;
+}
+
+.tasks{
+    max-width: 90px;
+    background-color: rgba(220, 220, 220, 0.075);
+    border-top: 1px;
+    border-bottom: 1px;
+    border-left: 1px;
+    border-right: 1px;
+    border-style: solid;
+    border-color: rgba(0,0,0,0.18);
+    padding: 10px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
