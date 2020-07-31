@@ -12,16 +12,15 @@ import Graph from '../components/graph'
 
 const URL = "http://localhost:3003/api/todos"
 
+
 export default class App extends Component{
     
     constructor(props){
         super(props)
-        this.state={ createdAt: '', list: Array(365).fill(3,0,364)}
+        this.state={ createdAt: '', list: []}
         
         this.handleAdd = this.handleAdd.bind(this)
-        this.handleChange = this.handleChange.bind(this)
         this.handleRemove = this.handleRemove.bind(this)
-        this.handleIsDone = this.handleIsDone.bind(this)
         
         this.refresh()
     }
@@ -57,13 +56,13 @@ export default class App extends Component{
                     <Input action="Waist"></Input>
                     <Input action="Neck"></Input>
                     <Result/>
-                    <Graph></Graph>
+                    <Graph createdAt={this.state.list}></Graph>
                 </div>
              )
 }}
 
 
-
+/* 
 
 export default class Todo extends Component{
 
@@ -86,4 +85,4 @@ export default class Todo extends Component{
             </div>
         )
     }
-}
+} */

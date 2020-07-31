@@ -2,15 +2,9 @@ import React from 'react'
 import './graph.css'
 
 export default props=>{
-    
-/*     const squares = document.querySelector('.squares');
-    for (var i = 1; i < 365; i++) {
-    const level = Math.floor(Math.random() * 3);  
-    squares.insertAdjacentHTML('beforeend', `<li data-level="${level}"></li>`);
-    } */
+
     const array = Array(365).fill(3,0,364)
-    const keys = Array(365)
-    console.log(keys.keys())
+    console.log(props.createdAt)
     return(
         <div className="graph">
             <ul className="months">
