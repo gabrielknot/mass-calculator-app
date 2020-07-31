@@ -6,6 +6,7 @@ import React, {Component} from "react";
 
 import Input from '../components/input'
 import Result from '../components/result'
+import Graph from '../components/graph'
 
 export default class App extends Component{
     
@@ -29,6 +30,7 @@ export default class App extends Component{
                     <Input action="Waist"></Input>
                     <Input action="Neck"></Input>
                     <Result/>
+                    <Graph></Graph>
                 </div>
              )
 }}
