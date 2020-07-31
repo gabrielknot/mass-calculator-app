@@ -19,6 +19,12 @@ type Task struct {
 	Hip       float32   `json:"hip,omitempty"`
 }
 
+type Group struct {
+	Id        int       `json:"id,omitempty"`
+	CreatedAt time.Time `json:"createdAt,omitempty"`
+	Tasks     []Task
+}
+
 var Tasks []Task = []Task{
 	Task{
 		Id:        1,
@@ -29,8 +35,16 @@ var Tasks []Task = []Task{
 		Hip:       0,
 	},
 	Task{
+		Id:        200,
+		CreatedAt: time.Now(),
+		Height:    198,
+		Neck:      38,
+		Waist:     95,
+		Hip:       0,
+	},
+	Task{
 		Id:        2,
-		CreatedAt: time.Now().Add(time.Hour * 168),
+		CreatedAt: time.Now(), /* .Add(time.Hour * 168) */
 		Height:    198,
 		Neck:      39,
 		Waist:     94,
@@ -62,9 +76,61 @@ var Tasks []Task = []Task{
 	},
 }
 
+func del(Tasks []Task, index int) []Task {
+	for index < len(Tasks)-1 {
+		Tasks[index] = Tasks[index+1]
+		index++
+	}
+	Tasks = Tasks[:len(Tasks)-1]
+	return Tasks
+}
+
+func groupByCreatedAt(Tasks []Task) []Group {
+	data := Tasks
+	/* var Groups []Group = []Group{
+	{
+		Id:        5,
+		CreatedAt: time.Now().Add(time.Hour * (168 * 4)),
+		Tasks:     data,
+	},
+	} */
+	var unitary_Groups []Group
+	var composing_Groups []Group
+
+	for i := 0; i < len(data)-1; i++ {
+		var new_Group Group
+		new_Group.CreatedAt = data[i].CreatedAt
+		new_Group.Tasks = append(new_Group.Tasks, data[i])
+		for j := 0; i < len(data)-1; i++ {
+			if data[i].CreatedAt == data[j].CreatedAt && i != j {
+
+				new_Group.Tasks = append(new_Group.Tasks, data[i])
+			}
+
+		}
+		composing_Groups = append(composing_Groups, new_Group)
+	}
+	for i := 0; i < len(data)-1; i++ {
+		var new_Group Group
+		new_Group.Id = len(unitary_Groups) + 1
+		new_Group.CreatedAt = data[i].CreatedAt
+		new_Group.Tasks = append(new_Group.Tasks, data[i])
+		unitary_Groups = append(unitary_Groups, new_Group)
+	}
+	for i := 0; i < len(composing_Groups); i++ {
+		composing_Groups[i].Id = len(unitary_Groups) + 1
+		unitary_Groups = append(unitary_Groups, composing_Groups[i])
+	}
+	return unitary_Groups
+}
+
 func getTask(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(Tasks)
+}
+func getGroup(w http.ResponseWriter, r *http.Request) {
+	groups := groupByCreatedAt(Tasks)
+	json.NewEncoder(w).Encode(groups)
 }
 
 func postTask(w http.ResponseWriter, r *http.Request) {
@@ -98,11 +164,7 @@ func deleteTask(w http.ResponseWriter, r *http.Request, URL_slices []string) {
 	if index < 0 {
 		w.WriteHeader(http.StatusNoContent)
 	} else {
-		for index < len(Tasks)-1 {
-			Tasks[index] = Tasks[index+1]
-			index++
-		}
-		Tasks = Tasks[:len(Tasks)-1]
+		Tasks = del(Tasks, index)
 	}
 }
 
@@ -162,35 +224,41 @@ func http_Tasks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	URL_slices := strings.Split(r.URL.Path, "/")
-
-	if len(URL_slices) < 4 || len(URL_slices) == 4 && URL_slices[3] == "" {
-
-		if r.Method == "GET" {
-			getTask(w, r)
-
-		} else if r.Method == "POST" {
-			postTask(w, r)
-
-		}
-	} else if len(URL_slices) >= 4 || URL_slices[len(URL_slices)-1] == "" {
-		if r.Method == "GET" {
-			searchTask(w, r, URL_slices)
-
-		} else if r.Method == "DELETE" {
-			deleteTask(w, r, URL_slices)
-
-		} else if r.Method == "PUT" {
-			putTask(w, r, URL_slices)
-		}
+	if URL_slices[len(URL_slices)-1] == "groups" || URL_slices[len(URL_slices)-2] == "groups" {
+		getGroup(w, r)
 	} else {
 
-		w.WriteHeader(http.StatusNotFound)
+		if len(URL_slices) < 4 || len(URL_slices) == 4 && URL_slices[3] == "" {
+
+			if r.Method == "GET" {
+				getTask(w, r)
+
+			} else if r.Method == "POST" {
+				postTask(w, r)
+
+			}
+		} else if len(URL_slices) >= 4 || URL_slices[len(URL_slices)-1] == "" {
+			if r.Method == "GET" {
+				searchTask(w, r, URL_slices)
+
+			} else if r.Method == "DELETE" {
+				deleteTask(w, r, URL_slices)
+
+			} else if r.Method == "PUT" {
+				putTask(w, r, URL_slices)
+			}
+		} else {
+
+			w.WriteHeader(http.StatusNotFound)
+		}
 	}
 }
 
 func configureRoutes() {
 	http.HandleFunc("/api/todos/", http_Tasks)
 	http.HandleFunc("/api/todos", http_Tasks)
+	http.HandleFunc("/api/groups/", http_Tasks)
+	http.HandleFunc("/api/groups", http_Tasks)
 
 }
 
