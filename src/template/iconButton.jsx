@@ -10,7 +10,7 @@ export default class IconButton extends Component{
     handleInputChange(event) {
         
     }
-
+    
     render(){
         if(this.props.checkbox){
             return <input

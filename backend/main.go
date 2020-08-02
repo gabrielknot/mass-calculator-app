@@ -94,7 +94,6 @@ func groupByCreatedAt(Tasks []Task) []Group {
 		Tasks:     data,
 	},
 	} */
-	var unitary_Groups []Group
 	var composing_Groups []Group
 
 	for i := 0; i < len(data)-1; i++ {
@@ -102,7 +101,7 @@ func groupByCreatedAt(Tasks []Task) []Group {
 		new_Group.CreatedAt = data[i].CreatedAt
 		new_Group.Tasks = append(new_Group.Tasks, data[i])
 		for j := 0; i < len(data)-1; i++ {
-			if data[i].CreatedAt == data[j].CreatedAt && i != j {
+			if data[i].CreatedAt.Sub(data[j].CreatedAt) <= 7 && i != j {
 
 				new_Group.Tasks = append(new_Group.Tasks, data[i])
 			}
@@ -110,18 +109,8 @@ func groupByCreatedAt(Tasks []Task) []Group {
 		}
 		composing_Groups = append(composing_Groups, new_Group)
 	}
-	for i := 0; i < len(data)-1; i++ {
-		var new_Group Group
-		new_Group.Id = len(unitary_Groups) + 1
-		new_Group.CreatedAt = data[i].CreatedAt
-		new_Group.Tasks = append(new_Group.Tasks, data[i])
-		unitary_Groups = append(unitary_Groups, new_Group)
-	}
-	for i := 0; i < len(composing_Groups); i++ {
-		composing_Groups[i].Id = len(unitary_Groups) + 1
-		unitary_Groups = append(unitary_Groups, composing_Groups[i])
-	}
-	return unitary_Groups
+
+	return composing_Groups
 }
 
 func getTask(w http.ResponseWriter, r *http.Request) {
