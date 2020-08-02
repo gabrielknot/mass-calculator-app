@@ -7,7 +7,7 @@ import axios from 'axios'
 
 import Input from '../components/input'
 import Result from '../components/result'
-import Graph from '../components/graph'
+import Graph from '../components/graph_registers'
 
 
 const URL_registers = "http://localhost:3003/api/todos"
