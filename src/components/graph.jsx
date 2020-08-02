@@ -34,7 +34,6 @@ function week_ofTheYear(){
     var date_string = [props.createdAt]
     var date_string = date_string[0]
 
-    console.log(date_string)
     date_string = date_string.map(n=>{
         const month=+n.createdAt.slice(5,7)
         const day=+n.createdAt.slice(8,10)
