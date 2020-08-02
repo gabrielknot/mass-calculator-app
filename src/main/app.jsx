@@ -10,14 +10,15 @@ import Result from '../components/result'
 import Graph from '../components/graph'
 
 
-const URL = "http://localhost:3003/api/todos"
+const URL_registers = "http://localhost:3003/api/todos"
+const URL_groups = "http://localhost:3003/api/groups"
 
 
 export default class App extends Component{
     
     constructor(props){
         super(props)
-        this.state={ createdAt: '', list: []}
+        this.state={ groups: [], registers: []}
         
         this.handleAdd = this.handleAdd.bind(this)
         this.handleRemove = this.handleRemove.bind(this)
@@ -26,25 +27,33 @@ export default class App extends Component{
     }
     
     refresh(){
-        axios.get(`${URL}`)
-         .then(resp => this.refreshState(resp))
+        axios.get(`${URL_registers}`)
+         .then(resp => this.refreshState(URL_registers,resp))
+        axios.get(`${URL_groups}`)
+            .then(resp => this.refreshState(URL_groups,resp))
     }
     
-    refreshState(resp) {
-        return this.setState({ ...this.state, createdAt: '', list: resp.data })
+    refreshState(URL,resp) {
+        if (URL === URL_registers){
+            return this.setState({ ...this.state, registers: resp.data })
+        }else{
+            if(URL=== URL_groups){
+                return this.setState({ ...this.state, groups: resp.data })
+            }
+        }
     }
     
     handleAdd(){
-        const createdAt = this.state.createdAt
-        if (createdAt != ''){
-            axios.post(URL, {createdAt}).then(_=> this.refresh())
+        const groups = this.state.groups
+        if (groups != ''){
+            axios.post(URL_registers, {groups}).then(_=> this.refresh())
         }
     }
     
     
     handleRemove(task){
     
-        axios.delete(`${URL}/${task.id}`).then(_=> this.refresh()).catch(_=> this.refresh())
+        axios.delete(`${URL_registers}/${task.id}`).then(_=> this.refresh()).catch(_=> this.refresh())
     }
 
     render(){
@@ -56,7 +65,7 @@ export default class App extends Component{
                     <Input action="Waist"></Input>
                     <Input action="Neck"></Input>
                     <Result/>
-                    <Graph createdAt={this.state.list}></Graph>
+                    <Graph groups={this.state.groups} createdAt={this.state.registers}></Graph>
                 </div>
              )
 }}

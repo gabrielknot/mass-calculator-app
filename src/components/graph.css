@@ -9,7 +9,6 @@
 }
 
 .months { grid-area: months; }
-.days { grid-area: days; }
 .squares { grid-area: squares; }
 
 .graph {
@@ -22,7 +21,8 @@
 
 .months {
   display: grid;
-  grid-template-columns: calc(var(--week-width) * 4) /* Jan */
+
+  grid-template-columns: calc(var(--week-width) * 4) /* Jan */ 
                          calc(var(--week-width) * 4) /* Feb */
                          calc(var(--week-width) * 4) /* Mar */
                          calc(var(--week-width) * 5) /* Apr */
@@ -36,11 +36,15 @@
                          calc(var(--week-width) * 5) /* Dec */;
 }
 
+.month{
+  border-right: 1px solid #dfdfdf;
+}
+
 .days,
 .squares {
   display: grid;
   grid-gap: var(--square-gap);
-  grid-template-rows: repeat(7, var(--square-size));
+  grid-template-rows: repeat(1, var(--square-size));
 }
 
 .squares {
@@ -57,7 +61,7 @@
   margin: 20px;
 }
 
-.days li:nth-child(odd) {
+.days li {
   visibility: hidden;
 }
 
