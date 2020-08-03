@@ -64,7 +64,9 @@
 .days li {
   visibility: hidden;
 }
-
+.button{
+  border-radius: 2px;
+}
 .squares li {
   cursor: pointer;
     list-style: none;
