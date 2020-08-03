@@ -1,6 +1,6 @@
 import React from 'react'
 import './graph.css'
-
+import Button from "../template/iconButton"
 export default props=>{
 /* 
 
