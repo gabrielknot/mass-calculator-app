@@ -1,6 +1,5 @@
 import React from 'react'
 import './graph.css'
-
 export default props=>{
 /* 
 
