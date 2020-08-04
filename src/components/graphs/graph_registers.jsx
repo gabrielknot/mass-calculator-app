@@ -91,18 +91,18 @@ return(
     <div className="graph">
             
             <ul className="months">
-            <li className="month" number={datetime}>Jan</li>
-            <li className="month" number={datetime}>Feb</li>
-            <li className="month" number={datetime}>Mar</li>
-            <li className="month" number={datetime}>Apr</li>
-            <li className="month" number={datetime}>May</li>
-            <li className="month" number={datetime}>Jun</li>
-            <li className="month" number={datetime}>Jul</li>
-            <li className="month" number={datetime}>Aug</li>
-            <li className="month" number={datetime}>Sep</li>
-            <li className="month" number={datetime}>Oct</li>
-            <li className="month" number={datetime}>Nov</li>
-            <li className="month" number={datetime}>Dec</li>
+            <li className="month" number={0-datetime}>Jan</li>
+            <li className="month" number={1-datetime}>Feb</li>
+            <li className="month" number={2-datetime}>Mar</li>
+            <li className="month" number={3-datetime}>Apr</li>
+            <li className="month" number={4-datetime}>May</li>
+            <li className="month" number={5-datetime}>Jun</li>
+            <li className="month" number={6-datetime}>Jul</li>
+            <li className="month" number={7-datetime}>Aug</li>
+            <li className="month" number={8-datetime}>Sep</li>
+            <li className="month" number={9-datetime}>Oct</li>
+            <li className="month" number={10-datetime}>Nov</li>
+            <li className="month" number={11-datetime}>Dec</li>
             </ul>
             <ul className="weeks">
             </ul>

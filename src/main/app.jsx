@@ -2,13 +2,13 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'font-awesome/css/font-awesome.min.css'
 import './custom.css'
 
-import React, {Component} from "react";
+import React, {Component, Suspense} from "react";
+import ReactLoading from 'react-loading'
 import axios from 'axios'
 
 import Input from '../components/input'
 import Result from '../components/result'
-import GraphRegister from '../components/graph_registers'
-import Graph from '../components/graph_variation'
+const GraphRegister = React.lazy(()=> import ('../components/graphs/graph_registers'))
 
 
 const URL_registers = "http://localhost:3003/api/todos"
@@ -62,12 +62,17 @@ export default class App extends Component{
                 <div className='container'>
                     <h1>Muscular Mass Pointer</h1>
 
-                    <Input action="Height"></Input>
-                    <Input action="Waist"></Input>
-                    <Input action="Neck"></Input>
-                    <Result/>
-                    <GraphRegister priority={""+Date.now.getMonth} groups={this.state.groups} createdAt={this.state.registers}></GraphRegister>
-                    <Graph></Graph>
+                    <Suspense fallback={<ReactLoading color="#000"/>}>
+                        <Input action="Height"></Input>
+                        <Input action="Waist"></Input>
+                        <Input action="Neck"></Input>
+                        <Result/>
+                    </Suspense>
+
+                    <Suspense  fallback={<ReactLoading color="#000"/>}>
+                        <GraphRegister priority={""+Date.now.getMonth} groups={this.state.groups} createdAt={this.state.registers}></GraphRegister>
+                    </Suspense>
+
                 </div>
              )
 }}
