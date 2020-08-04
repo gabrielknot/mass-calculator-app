@@ -27,8 +27,8 @@ function count(arr) {
 const range = (start, end) => Array.from({length: (end - start)}, (v, k) => k + start)
 
 
+const weeks_for_month= [4,4,4,5,4,4,5,4,4,5,4,5]
 function week_ofTheYear(){
-    const weeks_for_month= [4,4,4,5,4,4,5,4,4,5,4,5]
     
     var date_string = [props.createdAt]
     var date_string = date_string[0]
@@ -80,32 +80,35 @@ function dataLevel(date_string){
     })
     return range_weeks
 }
+var currentdate = new Date(); 
+var datetime =  + (currentdate.getMonth()+1)
+                
 
-
+console.log(datetime)
 
 const range_weeks = dataLevel(week_ofTheYear())
 return(
     <div className="graph">
+            
             <ul className="months">
-            <li className="month">Jan</li>
-            <li className="month">Feb</li>
-            <li className="month">Mar</li>
-            <li className="month">Apr</li>
-            <li className="month">May</li>
-            <li className="month">Jun</li>
-            <li className="month">Jul</li>
-            <li className="month">Aug</li>
-            <li className="month">Sep</li>
-            <li className="month">Oct</li>
-            <li className="month">Nov</li>
-            <li className="month">Dec</li>
+            <li className="month" number={datetime}>Jan</li>
+            <li className="month" number={datetime}>Feb</li>
+            <li className="month" number={datetime}>Mar</li>
+            <li className="month" number={datetime}>Apr</li>
+            <li className="month" number={datetime}>May</li>
+            <li className="month" number={datetime}>Jun</li>
+            <li className="month" number={datetime}>Jul</li>
+            <li className="month" number={datetime}>Aug</li>
+            <li className="month" number={datetime}>Sep</li>
+            <li className="month" number={datetime}>Oct</li>
+            <li className="month" number={datetime}>Nov</li>
+            <li className="month" number={datetime}>Dec</li>
             </ul>
-{/*             <ul className="days">
-            </ul> */}
+            <ul className="weeks">
+            </ul>
             <ul className="squares">
                 {
                 range_weeks.map(n=>{
-                    let i = Math.floor(Math.random() * 3)
                     return(
                     <li key={n.key} data-level={n.dataLevel}></li>
                     )

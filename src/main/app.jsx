@@ -7,7 +7,8 @@ import axios from 'axios'
 
 import Input from '../components/input'
 import Result from '../components/result'
-import Graph from '../components/graph_registers'
+import GraphRegister from '../components/graph_registers'
+import Graph from '../components/graph_variation'
 
 
 const URL_registers = "http://localhost:3003/api/todos"
@@ -65,7 +66,8 @@ export default class App extends Component{
                     <Input action="Waist"></Input>
                     <Input action="Neck"></Input>
                     <Result/>
-                    <Graph groups={this.state.groups} createdAt={this.state.registers}></Graph>
+                    <GraphRegister priority={""+Date.now.getMonth} groups={this.state.groups} createdAt={this.state.registers}></GraphRegister>
+                    <Graph></Graph>
                 </div>
              )
 }}

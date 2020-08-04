@@ -1,10 +1,15 @@
 import React from 'react'
+import {value_result} from "../template/value_result"
 import { connect } from "react-redux"
 
+
 function Result(props){
-    var result = (495/(1.03224-0.19077*(Math.log10(props.waist+props.hip-props.neck)) + 0.15566*(Math.log10(
-        props.height
-    ))) - 450 )+3
+    const waist =+props.waist
+    const neck =+props.neck
+    const height =+props.height
+    const hip =+props.hip
+
+    var result=value_result(waist,neck,hip,height)
 
     if (isNaN(result)) result = 0;
     return(
