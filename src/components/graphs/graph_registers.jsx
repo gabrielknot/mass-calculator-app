@@ -9,6 +9,7 @@ export default props=>{
 week_ofTheYear(props.createdAt) */
 
 function count(arr) {
+    
     var a = [], b = [], prev;
     
     arr.sort();
@@ -22,7 +23,7 @@ function count(arr) {
         prev = arr[i];
     }
     
-    return [a, b];
+    return[a, b];
 }
 const range = (start, end) => Array.from({length: (end - start)}, (v, k) => k + start)
 
@@ -64,15 +65,11 @@ function dataLevel(date_string){
     var dataLevel = 0
     range_weeks = range_weeks.map(n=>{
         if(date_string.includes(n)){
-            dataLevel=count(date_string)[1][date_string.indexOf(n)]
-            if(dataLevel==undefined){
-                dataLevel=1
-            }
-            
+            const r = count(date_string)
+            dataLevel=r[1][r[0].indexOf(n)]
         }else{
             dataLevel=0
         }
-        
         return({
             key:n,
             dataLevel:dataLevel
