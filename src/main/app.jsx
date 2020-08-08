@@ -8,7 +8,7 @@ import axios from 'axios'
 
 import Input from '../components/input'
 import Result from '../components/result'
-const GraphRegister = React.lazy(()=> import ('../components/graphs/graph_registers'))
+import GraphRegister from '../components/graphs/graph_registers'
 
 
 const URL_registers = "http://localhost:3003/api/todos"
@@ -69,9 +69,7 @@ export default class App extends Component{
                         <Result/>
                     </Suspense>
 
-                    <Suspense  fallback={<ReactLoading color="#000"/>}>
-                        <GraphRegister priority={""+Date.now.getMonth} groups={this.state.groups} createdAt={this.state.registers}></GraphRegister>
-                    </Suspense>
+                    <GraphRegister priority={""+Date.now.getMonth} groups={this.state.groups} createdAt={this.state.registers}></GraphRegister>
 
                 </div>
              )
