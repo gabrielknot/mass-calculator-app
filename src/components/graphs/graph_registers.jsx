@@ -1,22 +1,106 @@
 import React from "react";
 import { scaleLinear } from "d3-scale";
-import {extent} from "d3-array"
+import { timeFormat } from "d3-time-format";
+import {extent} from "d3-array";
+import {value_result} from "../../template/value_result"
 
+function DataFromProps(props) {
+  var propsArray = [...props.registers]
+  console.log(propsArray)
+  propsArray = propsArray.map(n=>{
+    const dateYear = +n.createdAt.slice(0,4)
+    const dateMonth =+n.createdAt.slice(5,7)-1
+    const dateDay =  +n.createdAt.slice(8,10)-1
+  
+    const waist = n.waist
+    const neck = n.neck
+    const hip = n.hip==undefined ? 0:n.hip
+    const height = n.height
 
-function RandomData() {
-  const data = [...Array(100)].map((e, i) => {
+    
+    return({
+      date:new Date(dateYear,dateMonth,dateDay),
+      result: value_result(waist,neck,hip,height)
+    })
+  })
+  propsArray= propsArray.sort(function(a,b){
+    return new Date(b.date) - new Date(a.date);
+  });
+
+  
+  console.log(propsArray)
+  const data = [...propsArray].map(n => {
     return {
-      x: Math.random() * 40,
-      y: Math.random() * 40,
-      temparature: Math.random() * 500
+      x: n.date,
+      y: n.result
     };
   });
   return data;
 }
+const plotAxis = {
+  y:({ yScale, width })=>{
+    const textPadding = -20
+   
+     const axis = yScale.ticks(10).map((d, i) => (
+       <g key={i} className="y-tick">
+         <line
+           style={{ stroke: "#e4e5eb" }}
+           y1={yScale(d)}
+           y2={yScale(d)}
+           x1={0}
+           x2={width}
+         />
+         <text
+           style={{ fontSize: 12 }}
+           x={textPadding}
+           dy=".32em"
+           y={yScale(d)}
+         >
+           {d}
+         </text>
+       </g>
+     ));
+     return <>{axis}</>;
+   },
+   x:({ xScale, height })=>{
+    const textPadding = 10;
+  
+    
 
-function Scatter() {
-  const data = RandomData(),
-    w = 600,
+    const formatTime = timeFormat("%d/%b")
+    
+
+    
+    const axis = xScale.ticks(10).map((d, i) => {
+    
+      return(
+          <g className="x-tick" key={i}>
+            <line
+              style={{ stroke: "#e4e5eb" }}
+              y1={0}
+              y2={height}
+              x1={xScale(d)}
+              x2={xScale(d)}
+            />
+            <text
+              style={{ textAnchor: "middle", fontSize: 12 }}
+              dy=".71em"
+              x={xScale(d)}
+              y={height + textPadding}
+            >
+              {formatTime(d)}
+            </text>
+          </g>
+      )
+    });
+  return <>{axis}</>;
+  }
+   
+}
+
+export default function LineChart(props) {
+  const data = DataFromProps(props),
+    w = 1200,
     h = 600,
     margin = {
       top: 40,
@@ -31,9 +115,14 @@ function Scatter() {
   const xScale = scaleLinear()
     .domain(extent(data, d => d.x))
     .range([0, width]);
+    console.log(extent(data, d => d.x))
+  
+  const distanceDataDomain = 2
+  const minimumValueDomain = extent(data, d => d.y)[0]-distanceDataDomain
+  const maxValueDomain = extent(data, d => d.y)[1]+distanceDataDomain
 
   const yScale = scaleLinear()
-    .domain(extent(data, d => d.y))
+    .domain([minimumValueDomain,maxValueDomain])
     .range([height, 0]);
 
 const circles = data.map((d, i) => (
@@ -45,19 +134,64 @@ const circles = data.map((d, i) => (
       style={{ fill: "lightblue"}}
     />
   ));
+  var linesCoordinates =  (data)=>{
+    const ArrayOfCoordinates=[];
+    for (let i = 1; i < data.length; i++) {
+    
+      const prev = data[i-1];
+      const curr = data[i]
+      ArrayOfCoordinates.push(
+        {
+          x1:xScale(prev.x),
+          x2:xScale(curr.x),
+          y1:yScale(prev.y),
+          y2:yScale(curr.y)
+        }
+        );
+        }
+        
+        console.log(ArrayOfCoordinates)
+        return ArrayOfCoordinates.sort()
+        
+      }
+      
+  
+  linesCoordinates =  linesCoordinates(data)
+  const lines=linesCoordinates.map((d, i)=>{
+    return(
+      <g className="line" key={i}>
+      <line
+        style={{ stroke: "#000000" }}
+        x1={d.x1}
+        x2={d.x2}
+        y1={d.y1}
+        y2={d.y2}
+      />
+      </g>
+    )
+  })
+
+  const formatMonthYear = timeFormat("%b,%Y");
+  const lastDate = data.map(n=> n.x)
+  const currentMonthYear = formatMonthYear(lastDate[lastDate.length-1])
 
   return (
     <div>
       <svg width={w} height={h}>
         <g transform={`translate(${margin.left},${margin.top})`}>
+          <plotAxis.y yScale={yScale} width={width}/>
+          <plotAxis.x xScale={xScale} height={height}/>
+          {lines}
           {circles}
         </g>
       </svg>
+          <>
+            {currentMonthYear}
+          </>
     </div>
   );
 }
 
-export default Scatter;
         
         /* export default props=>{
         

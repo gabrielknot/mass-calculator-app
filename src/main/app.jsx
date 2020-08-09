@@ -12,16 +12,14 @@ import GraphRegister from '../components/graphs/graph_registers'
 
 
 const URL_registers = "http://localhost:3003/api/todos"
-const URL_groups = "http://localhost:3003/api/groups"
 
 
 export default class App extends Component{
     
     constructor(props){
         super(props)
-        this.state={ groups: [], registers: []}
+        this.state={ registers: []}
         
-        this.handleAdd = this.handleAdd.bind(this)
         this.handleRemove = this.handleRemove.bind(this)
         
         this.refresh()
@@ -30,26 +28,21 @@ export default class App extends Component{
     refresh(){
         axios.get(`${URL_registers}`)
          .then(resp => this.refreshState(URL_registers,resp))
-        axios.get(`${URL_groups}`)
-            .then(resp => this.refreshState(URL_groups,resp))
+        
     }
     
     refreshState(URL,resp) {
         if (URL === URL_registers){
             return this.setState({ ...this.state, registers: resp.data })
-        }else{
-            if(URL=== URL_groups){
-                return this.setState({ ...this.state, groups: resp.data })
-            }
         }
     }
     
-    handleAdd(){
+    /* handleAdd(){
         const groups = this.state.groups
         if (groups != ''){
             axios.post(URL_registers, {groups}).then(_=> this.refresh())
         }
-    }
+    } */
     
     
     handleRemove(task){
@@ -69,7 +62,7 @@ export default class App extends Component{
                         <Result/>
                     </Suspense>
 
-                    <GraphRegister priority={""+Date.now.getMonth} groups={this.state.groups} createdAt={this.state.registers}></GraphRegister>
+                    <GraphRegister  registers={this.state.registers}></GraphRegister>
 
                 </div>
              )
