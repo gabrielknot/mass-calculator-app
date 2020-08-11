@@ -19,12 +19,6 @@ type Task struct {
 	Hip       float32   `json:"hip,omitempty"`
 }
 
-type Group struct {
-	Id        int       `json:"id,omitempty"`
-	CreatedAt time.Time `json:"createdAt,omitempty"`
-	Tasks     []Task
-}
-
 var Tasks []Task = []Task{
 	Task{
 		Id:        1,
@@ -35,16 +29,8 @@ var Tasks []Task = []Task{
 		Hip:       0,
 	},
 	Task{
-		Id:        200,
-		CreatedAt: time.Now(),
-		Height:    198,
-		Neck:      38,
-		Waist:     95,
-		Hip:       0,
-	},
-	Task{
 		Id:        2,
-		CreatedAt: time.Now(), /* .Add(time.Hour * 168) */
+		CreatedAt: time.Now().Add(time.Hour * 168), /* .Add(time.Hour * 168) */
 		Height:    198,
 		Neck:      39,
 		Waist:     94,
@@ -74,6 +60,14 @@ var Tasks []Task = []Task{
 		Waist:     90,
 		Hip:       0,
 	},
+	Task{
+		Id:        6,
+		CreatedAt: time.Now().Add(time.Hour * (168 * 5)),
+		Height:    198,
+		Neck:      38,
+		Waist:     95,
+		Hip:       0,
+	},
 }
 
 func del(Tasks []Task, index int) []Task {
@@ -85,41 +79,9 @@ func del(Tasks []Task, index int) []Task {
 	return Tasks
 }
 
-func groupByCreatedAt(Tasks []Task) []Group {
-	data := Tasks
-	/* var Groups []Group = []Group{
-	{
-		Id:        5,
-		CreatedAt: time.Now().Add(time.Hour * (168 * 4)),
-		Tasks:     data,
-	},
-	} */
-	var composing_Groups []Group
-
-	for i := 0; i < len(data)-1; i++ {
-		var new_Group Group
-		new_Group.CreatedAt = data[i].CreatedAt
-		new_Group.Tasks = append(new_Group.Tasks, data[i])
-		for j := 0; i < len(data)-1; i++ {
-			if data[i].CreatedAt.Sub(data[j].CreatedAt) <= 7 && i != j {
-
-				new_Group.Tasks = append(new_Group.Tasks, data[i])
-			}
-
-		}
-		composing_Groups = append(composing_Groups, new_Group)
-	}
-
-	return composing_Groups
-}
-
 func getTask(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(Tasks)
-}
-func getGroup(w http.ResponseWriter, r *http.Request) {
-	groups := groupByCreatedAt(Tasks)
-	json.NewEncoder(w).Encode(groups)
 }
 
 func postTask(w http.ResponseWriter, r *http.Request) {
@@ -137,9 +99,9 @@ func postTask(w http.ResponseWriter, r *http.Request) {
 		new_Task.Id = Tasks[len(Tasks)-1].Id + 1
 		new_Task.CreatedAt = time.Now()
 		new_Task.Height = 198
-		new_Task.Hip = 0
 		new_Task.Neck = 40
 		new_Task.Waist = 90
+		new_Task.Hip = 0
 		Tasks = append(Tasks, new_Task)
 
 	}
@@ -213,41 +175,35 @@ func http_Tasks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	URL_slices := strings.Split(r.URL.Path, "/")
-	if URL_slices[len(URL_slices)-1] == "groups" || URL_slices[len(URL_slices)-2] == "groups" {
-		getGroup(w, r)
+
+	if len(URL_slices) < 4 || len(URL_slices) == 4 && URL_slices[3] == "" {
+
+		if r.Method == "GET" {
+			getTask(w, r)
+
+		} else if r.Method == "POST" {
+			postTask(w, r)
+
+		}
+	} else if len(URL_slices) >= 4 || URL_slices[len(URL_slices)-1] == "" {
+		if r.Method == "GET" {
+			searchTask(w, r, URL_slices)
+
+		} else if r.Method == "DELETE" {
+			deleteTask(w, r, URL_slices)
+
+		} else if r.Method == "PUT" {
+			putTask(w, r, URL_slices)
+		}
 	} else {
 
-		if len(URL_slices) < 4 || len(URL_slices) == 4 && URL_slices[3] == "" {
-
-			if r.Method == "GET" {
-				getTask(w, r)
-
-			} else if r.Method == "POST" {
-				postTask(w, r)
-
-			}
-		} else if len(URL_slices) >= 4 || URL_slices[len(URL_slices)-1] == "" {
-			if r.Method == "GET" {
-				searchTask(w, r, URL_slices)
-
-			} else if r.Method == "DELETE" {
-				deleteTask(w, r, URL_slices)
-
-			} else if r.Method == "PUT" {
-				putTask(w, r, URL_slices)
-			}
-		} else {
-
-			w.WriteHeader(http.StatusNotFound)
-		}
+		w.WriteHeader(http.StatusNotFound)
 	}
 }
 
 func configureRoutes() {
 	http.HandleFunc("/api/todos/", http_Tasks)
 	http.HandleFunc("/api/todos", http_Tasks)
-	http.HandleFunc("/api/groups/", http_Tasks)
-	http.HandleFunc("/api/groups", http_Tasks)
 
 }
 
