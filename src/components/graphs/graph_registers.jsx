@@ -6,7 +6,6 @@ import {value_result} from "../../template/value_result"
 
 function DataFromProps(props) {
   var propsArray = [...props.registers]
-  console.log(propsArray)
   propsArray = propsArray.map(n=>{
     const dateYear = +n.createdAt.slice(0,4)
     const dateMonth =+n.createdAt.slice(5,7)-1
@@ -16,32 +15,41 @@ function DataFromProps(props) {
     const neck = n.neck
     const hip = n.hip==undefined ? 0:n.hip
     const height = n.height
-
-    
+    const resultFat = value_result(waist,neck,hip,height)
+    const resultMuscle= 100 - resultFat
     return({
       date:new Date(dateYear,dateMonth,dateDay),
-      result: value_result(waist,neck,hip,height)
+      resultFat: resultFat,
+      resultMuscle: resultMuscle
     })
   })
+
   propsArray= propsArray.sort(function(a,b){
     return new Date(b.date) - new Date(a.date);
   });
-
-  
   console.log(propsArray)
-  const data = [...propsArray].map(n => {
+  const dataFat = propsArray.map(n => {
     return {
       x: n.date,
-      y: n.result
+      y: n.resultFat
+    };
+  }),
+  dataMuscle = propsArray.map(n => {
+    return {
+      x: n.date,
+      y: n.resultMuscle
     };
   });
-  return data;
+  return {
+    Fat: dataFat,
+    Muscular:dataMuscle
+  };
 }
 const plotAxis = {
   y:({ yScale, width })=>{
     const textPadding = -20
-   
-     const axis = yScale.ticks(10).map((d, i) => (
+    
+    const axis = yScale.ticks(10).map((d, i) => (
        <g key={i} className="y-tick">
          <line
            style={{ stroke: "#e4e5eb" }}
@@ -49,7 +57,7 @@ const plotAxis = {
            y2={yScale(d)}
            x1={0}
            x2={width}
-         />
+           />
          <text
            style={{ fontSize: 12 }}
            x={textPadding}
@@ -63,13 +71,13 @@ const plotAxis = {
      return <>{axis}</>;
    },
    x:({ xScale, height })=>{
-    const textPadding = 10;
-  
-    const formatTime = timeFormat("%d/%b")
+     const textPadding = 10;
+     
+     const formatTime = timeFormat("%d/%b")
     
-    const axis = xScale.ticks(10).map((d, i) => {
+     const axis = xScale.ticks(10).map((d, i) => {
     
-      return(
+       return(
           <g className="x-tick" key={i}>
             <line
               style={{ stroke: "#e4e5eb" }}
@@ -77,25 +85,27 @@ const plotAxis = {
               y2={height}
               x1={xScale(d)}
               x2={xScale(d)}
-            />
+              />
             <text
               style={{ textAnchor: "middle", fontSize: 12 }}
               dy=".71em"
               x={xScale(d)}
               y={height + textPadding}
-            >
+              >
               {formatTime(d)}
             </text>
           </g>
       )
     });
-  return <>{axis}</>;
+    return <>{axis}</>;
   }
-   
+  
 }
 
 export default function LineChart(props) {
-  const data = DataFromProps(props),
+  const data = DataFromProps(props)
+  const dataFat = data.Fat, 
+    dataMuscular = data.Muscular,
     w = 1200,
     h = 600,
     margin = {
@@ -104,33 +114,76 @@ export default function LineChart(props) {
       left: 40,
       right: 40
     };
-
+    
   const width = w - margin.right - margin.left,
     height = h - margin.top - margin.bottom;
-
-  const xScale = scaleLinear()
-    .domain(extent(data, d => d.x))
+    
+    const xScale = scaleLinear()
+    .domain(extent(dataFat, d => d.x))
     .range([0, width]);
-    console.log(extent(data, d => d.x))
   
-  const distanceDataDomain = 2
-  const minimumValueDomain = extent(data, d => d.y)[0]-distanceDataDomain
-  const maxValueDomain = extent(data, d => d.y)[1]+distanceDataDomain
+    const distanceDataDomain = 2
+  const minimumValueDomain = extent(dataFat, d => d.y)[0]-distanceDataDomain
+  const maxValueDomain = extent(dataMuscular, d => d.y)[1]+distanceDataDomain
 
   const yScale = scaleLinear()
-    .domain([minimumValueDomain,maxValueDomain])
+  .domain([minimumValueDomain,maxValueDomain])
     .range([height, 0]);
+    
+  const textPadding = -20
 
-const circles = data.map((d, i) => (
-    <circle
-      key={i}
-      r={5}
-      cx={xScale(d.x)}
-      cy={yScale(d.y)}
-      style={{ fill: "lightblue"}}
-    />
-  ));
-  var linesCoordinates =  (data)=>{
+  const circlesFat = dataFat.map((d, i) => {
+    const title = d.y.toFixed(2)
+      return(
+      <g className="circle" key={i}>
+        <circle
+          r={0.2*d.y}
+          cx={xScale(d.x)}
+          cy={yScale(d.y)}
+          style={{ fill: "#ded44b"}}
+          />
+        <text
+          style={{ 
+            fill:"#edeac2",
+            textAnchor: "middle",
+            fontSize: 12 
+          }}
+          dy=".71em"
+          x={xScale(d.x) - textPadding}
+          y={yScale(d.y) + textPadding}
+        >
+          {title}
+        </text>
+      </g>
+      )
+    }
+  );
+const circlesMuscular = dataMuscular.map((d, i) => {
+  const title = d.y.toFixed(2)
+    return(
+    <g className="circle" key={i}>
+      <circle
+        r={0.05*d.y}
+        cx={xScale(d.x)}
+        cy={yScale(d.y)}
+        style={{ fill: "#e65353"}}
+        />
+      <text
+        style={{ 
+          fill:"#edc7c2",
+          textAnchor: "middle",
+          fontSize: 12 
+        }}
+        dy=".71em"
+        x={xScale(d.x) - textPadding}
+        y={yScale(d.y) + textPadding}
+      >
+        {title}
+      </text>
+    </g>
+    )
+  });
+  const linesCoordinates =  (data)=>{
     const ArrayOfCoordinates=[];
     for (let i = 1; i < data.length; i++) {
     
@@ -146,18 +199,32 @@ const circles = data.map((d, i) => (
         );
         }
         
-        console.log(ArrayOfCoordinates)
         return ArrayOfCoordinates.sort()
         
       }
       
   
-  linesCoordinates =  linesCoordinates(data)
-  const lines=linesCoordinates.map((d, i)=>{
+  const lineFatCoordinate =  linesCoordinates(dataFat)
+  const lineMuscularCoordinate =  linesCoordinates(dataMuscular)
+  
+  const lineFat=lineFatCoordinate.map((d, i)=>{
     return(
       <g className="line" key={i}>
       <line
-        style={{ stroke: "#000000" }}
+        style={{ stroke: "#ffe200" }}
+        x1={d.x1}
+        x2={d.x2}
+        y1={d.y1}
+        y2={d.y2}
+      />
+      </g>
+    )
+  })
+  const lineMuscular=lineMuscularCoordinate.map((d, i)=>{
+    return(
+      <g className="line" key={i}>
+      <line
+        style={{ stroke: "#d90000" }}
         x1={d.x1}
         x2={d.x2}
         y1={d.y1}
@@ -168,7 +235,7 @@ const circles = data.map((d, i) => (
   })
 
   const formatMonthYear = timeFormat("%b,%Y");
-  const lastDate = data.map(n=> n.x)
+  const lastDate = dataFat.map(n=> n.x)
   const currentMonthYear = formatMonthYear(lastDate[lastDate.length-1])
 
   return (
@@ -177,8 +244,10 @@ const circles = data.map((d, i) => (
         <g transform={`translate(${margin.left},${margin.top})`}>
           <plotAxis.y yScale={yScale} width={width}/>
           <plotAxis.x xScale={xScale} height={height}/>
-          {lines}
-          {circles}
+          {lineFat}
+          {lineMuscular}
+          {circlesFat}
+          {circlesMuscular}
         </g>
       </svg>
           <>
