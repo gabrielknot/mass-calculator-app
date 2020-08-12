@@ -48,8 +48,8 @@ function DataFromProps(props) {
 const plotAxis = {
   y:({ yScale, width })=>{
     const textPadding = -20
-    
-    const axis = yScale.ticks(10).map((d, i) => (
+   
+     const axis = yScale.ticks(10).map((d, i) => (
        <g key={i} className="y-tick">
          <line
            style={{ stroke: "#e4e5eb" }}
@@ -57,7 +57,7 @@ const plotAxis = {
            y2={yScale(d)}
            x1={0}
            x2={width}
-           />
+         />
          <text
            style={{ fontSize: 12 }}
            x={textPadding}
@@ -71,13 +71,17 @@ const plotAxis = {
      return <>{axis}</>;
    },
    x:({ xScale, height })=>{
-     const textPadding = 10;
-     
-     const formatTime = timeFormat("%d/%b")
+    const textPadding = 10;
+  
     
-     const axis = xScale.ticks(10).map((d, i) => {
+
+    const formatTime = timeFormat("%d/%b")
     
-       return(
+
+    
+    const axis = xScale.ticks(10).map((d, i) => {
+    
+      return(
           <g className="x-tick" key={i}>
             <line
               style={{ stroke: "#e4e5eb" }}
@@ -85,21 +89,21 @@ const plotAxis = {
               y2={height}
               x1={xScale(d)}
               x2={xScale(d)}
-              />
+            />
             <text
               style={{ textAnchor: "middle", fontSize: 12 }}
               dy=".71em"
               x={xScale(d)}
               y={height + textPadding}
-              >
+            >
               {formatTime(d)}
             </text>
           </g>
       )
     });
-    return <>{axis}</>;
+  return <>{axis}</>;
   }
-  
+   
 }
 
 export default function LineChart(props) {
@@ -233,6 +237,11 @@ const circlesMuscular = dataMuscular.map((d, i) => {
       </g>
     )
   })
+  
+  const graphPolygon={
+    Fat: <polygon></polygon>,
+    Muscular: <polygon></polygon>
+  }
 
   const formatMonthYear = timeFormat("%b,%Y");
   const lastDate = dataFat.map(n=> n.x)
