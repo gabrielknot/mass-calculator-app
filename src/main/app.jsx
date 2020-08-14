@@ -8,7 +8,7 @@ import axios from 'axios'
 
 import Input from '../components/input'
 import Result from '../components/result'
-import GraphRegister from '../components/graphs/graph_registers'
+import GraphRegister from '../components/graphs/LineGraph'
 
 
 const URL_registers = "http://localhost:3003/api/todos"
