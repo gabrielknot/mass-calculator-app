@@ -126,9 +126,11 @@ export default function LineChart(props) {
     .domain(extent(dataFat, d => d.x))
     .range([0, width]);
   
-    const distanceDataDomain = 2
-  const minimumValueDomain = extent(dataFat, d => d.y)[0]-distanceDataDomain
-  const maxValueDomain = extent(dataMuscular, d => d.y)[1]+distanceDataDomain
+    const distanceDataDomain = 5
+  const minimumValueDomain = extent(dataFat, d => d.y)[0]-distanceDataDomain >= 0 ?
+                                                              extent(dataFat, d => d.y)[0]-distanceDataDomain:0
+  const maxValueDomain = extent(dataMuscular, d => d.y)[1]+distanceDataDomain <= 100 ?
+                                                              extent(dataMuscular, d => d.y)[1]+distanceDataDomain:100
 
   const yScale = scaleLinear()
   .domain([minimumValueDomain,maxValueDomain])
@@ -162,6 +164,7 @@ export default function LineChart(props) {
       )
     }
   );
+
 const circlesMuscular = dataMuscular.map((d, i) => {
   const title = d.y.toFixed(2)
     return(
@@ -187,6 +190,7 @@ const circlesMuscular = dataMuscular.map((d, i) => {
     </g>
     )
   });
+
   const linesCoordinates =  (data)=>{
     const ArrayOfCoordinates=[];
     for (let i = 1; i < data.length; i++) {
@@ -208,8 +212,8 @@ const circlesMuscular = dataMuscular.map((d, i) => {
       }
       
   
-  const lineFatCoordinate =  linesCoordinates(dataFat)
-  const lineMuscularCoordinate =  linesCoordinates(dataMuscular)
+  const lineFatCoordinate =  linesCoordinates(dataFat);
+  const lineMuscularCoordinate =  linesCoordinates(dataMuscular);
   
   const lineFat=lineFatCoordinate.map((d, i)=>{
     return(
@@ -223,7 +227,8 @@ const circlesMuscular = dataMuscular.map((d, i) => {
       />
       </g>
     )
-  })
+  });
+
   const lineMuscular=lineMuscularCoordinate.map((d, i)=>{
     return(
       <g className="line" key={i}>
@@ -236,16 +241,45 @@ const circlesMuscular = dataMuscular.map((d, i) => {
       />
       </g>
     )
-  })
-  
+  });
+
+  const polygonCoordinates = (data, presetPoints='') =>{
+    var graphPresets=`0,${height} ${width},${height} `;
+
+    var ArrayOfCoordinates = '';
+    
+    if(presetPoints!=''){
+      const splitPresetPoints = presetPoints.split(" "),
+
+      reversedPoints = splitPresetPoints.reverse();
+      graphPresets=reversedPoints.join(" ");
+    }
+
+    data.forEach(el => {
+      const xCoordinate = xScale(el.x)
+      const yCoordinate = yScale(el.y)
+      ArrayOfCoordinates = ArrayOfCoordinates.concat(` ${xCoordinate},${yCoordinate} `)
+    });
+    
+    return ArrayOfCoordinates.concat(graphPresets)
+  };
+
+  const arrayOfFatCoordinates = polygonCoordinates(dataFat);
+  const arrayOfMuscularCoordinates = polygonCoordinates(dataMuscular,arrayOfFatCoordinates.slice(0,-15));
+  console.log(arrayOfMuscularCoordinates)
+  console.log(arrayOfFatCoordinates)
   const graphPolygon={
-    Fat: <polygon></polygon>,
-    Muscular: <polygon></polygon>
-  }
+    Fat: <polygon className="FatPolygon" 
+                  style={{ fill: "rgba(255,226,0,0.26)" }}
+                  points={arrayOfFatCoordinates}/>,
+    Muscular: <polygon className="MuscularPolygon"
+                  style={{ fill: "rgba(217,0,0,0.26)" }}
+                  points={arrayOfMuscularCoordinates}/>
+  };
 
   const formatMonthYear = timeFormat("%b,%Y");
-  const lastDate = dataFat.map(n=> n.x)
-  const currentMonthYear = formatMonthYear(lastDate[lastDate.length-1])
+  const lastDate = dataFat.map(n=> n.x);
+  const currentMonthYear = formatMonthYear(lastDate[lastDate.length-1]);
 
   return (
     <div>
@@ -253,10 +287,13 @@ const circlesMuscular = dataMuscular.map((d, i) => {
         <g transform={`translate(${margin.left},${margin.top})`}>
           <plotAxis.y yScale={yScale} width={width}/>
           <plotAxis.x xScale={xScale} height={height}/>
-          {lineFat}
           {lineMuscular}
-          {circlesFat}
+          {graphPolygon.Muscular}
           {circlesMuscular}
+          
+          {lineFat}
+          {graphPolygon.Fat}
+          {circlesFat}
         </g>
       </svg>
           <>
