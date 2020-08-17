@@ -96,8 +96,9 @@ func postTask(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 
 		json.Unmarshal(body, &new_Task)
-		new_Task.Id = Tasks[len(Tasks)-1].Id + 1
-		new_Task.CreatedAt = time.Now()
+		Last_id := Tasks[len(Tasks)-1].Id
+		new_Task.Id = Last_id + 1
+		new_Task.CreatedAt = time.Now().AddDate(0, 0, 7*Last_id)
 		new_Task.Height = 198
 		new_Task.Neck = 40
 		new_Task.Waist = 90

@@ -7,6 +7,7 @@ import ReactLoading from 'react-loading'
 import axios from 'axios'
 
 import Input from '../components/input'
+import CustomButton from '../template/iconButton'
 import Result from '../components/result'
 import GraphRegister from '../components/graphs/LineGraph'
 
@@ -21,7 +22,8 @@ export default class App extends Component{
         this.state={ registers: []}
         
         this.handleRemove = this.handleRemove.bind(this)
-        
+        this.handleAdd = this.handleAdd.bind(this)
+
         this.refresh()
     }
     
@@ -37,12 +39,11 @@ export default class App extends Component{
         }
     }
     
-    /* handleAdd(){
-        const groups = this.state.groups
+    handleAdd(){
         if (groups != ''){
             axios.post(URL_registers, {groups}).then(_=> this.refresh())
         }
-    } */
+    }
     
     
     handleRemove(task){
@@ -56,9 +57,13 @@ export default class App extends Component{
                     <h1>Muscular Mass Pointer</h1>
 
                     <Suspense fallback={<ReactLoading color="#000"/>}>
-                        <Input action="Height"></Input>
-                        <Input action="Waist"></Input>
-                        <Input action="Neck"></Input>
+                        <div className="display-flex">
+                            <Input action="Height"></Input>
+                            <Input action="Waist"></Input>
+                            <Input action="Neck"></Input>
+                            <CustomButton className="button" style="primary" 
+                                    onClick={this.handleAdd} >+</CustomButton>
+                        </div>
                         <Result/>
                     </Suspense>
 
